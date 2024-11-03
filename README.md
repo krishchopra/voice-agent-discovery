@@ -4,7 +4,7 @@ An automated system for discovering and mapping AI voice agent conversation flow
 
 ## Prerequisites
 
--   Node.js (v16 or higher)
+-   Node.js
 -   npm or yarn
 -   A Deepgram API key
 -   A Hamming AI API token
@@ -14,7 +14,7 @@ An automated system for discovering and mapping AI voice agent conversation flow
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-repo/voice-agent-discovery.git
+git clone https://github.com/krishchopra/voice-agent-discovery.git
 cd voice-agent-discovery
 ```
 
@@ -27,7 +27,7 @@ npm install
 3. Create a `.env` file in the root directory with the following variables:
 
 ```env
-API_TOKEN=your_api_token_here
+API_TOKEN=your_hamming_api_token_here
 WEBHOOK_PORT=3000
 WEBHOOK_URL=your_webhook_url_here
 DEEPGRAM_API_KEY=your_deepgram_api_key_here
@@ -42,15 +42,14 @@ Start the application:
 npm start
 ```
 
-
 ## Architecture
 
 The system consists of several key components:
 
-- **WebhookServer**: Handles incoming call status updates
-- **CallService**: Manages voice agent API interactions
-- **TranscriptionService**: Processes audio recordings using Deepgram
-- **CallTree**: Tracks and manages the discovery process
+-   **WebhookServer**: Handles incoming call status updates
+-   **CallService**: Manages voice agent API interactions
+-   **TranscriptionService**: Processes audio recordings using Deepgram
+-   **CallTree**: Tracks and manages the discovery process
 
 ## Development
 
