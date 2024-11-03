@@ -52,15 +52,29 @@ export class CallService {
 
 	async getRecording(callId: string): Promise<Buffer> {
 		try {
-			const response = await axios.get(`${this.baseUrl}/media/exercise`, {
+			const url = `${this.baseUrl}/api/media/exercise`;
+			console.log(`Attempting to fetch recording from: ${url}`);
+			console.log(`Call ID: ${callId}`);
+
+			const response = await axios.get(url, {
 				params: { id: callId },
 				responseType: "arraybuffer",
 				headers: {
 					Authorization: `Bearer ${this.apiToken}`,
 				},
 			});
+
 			return Buffer.from(response.data);
 		} catch (error: any) {
+			console.error("API Error Details:", {
+				status: error.response?.status,
+				data: error.response?.data,
+				config: {
+					url: error.config?.url,
+					method: error.config?.method,
+					headers: error.config?.headers,
+				},
+			});
 			throw new Error(`Failed to get recording: ${error.message}`);
 		}
 	}

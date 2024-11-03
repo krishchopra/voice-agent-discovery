@@ -65,7 +65,7 @@ describe("CallService", () => {
 
 			expect(Buffer.isBuffer(result)).toBe(true);
 			expect(mockedAxios.get).toHaveBeenCalledWith(
-				"http://test.api/media/exercise",
+				"http://test.api/api/media/exercise",
 				{
 					params: { id: "test-call-id" },
 					responseType: "arraybuffer",

@@ -19,10 +19,11 @@ async function main() {
 		transcriptionService,
 		webhookServer,
 		config.testPhoneNumber,
-		"Hello, I'd like to learn more about your services."
+		"Hello, this is Joe's Auto Repair virtual assistant. How can I help you today?"
 	);
 
 	await discoveryService.start();
+	discoveryService.exportScenarios();
 }
 
 main().catch((error) => {

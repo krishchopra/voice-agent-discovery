@@ -20,9 +20,7 @@ export class WebhookServer extends EventEmitter {
 			const payload = req.body as WebhookPayload;
 			logger.info("Received webhook:", payload);
 
-			if (payload.status === "completed" && payload.recording_available) {
-				this.emit("recordingReady", payload.id);
-			}
+			this.emit("recordingReady", payload);
 
 			res.sendStatus(200);
 		});

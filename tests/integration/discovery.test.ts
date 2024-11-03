@@ -50,12 +50,27 @@ describe("DiscoveryService Integration", () => {
 			expect.any(String)
 		);
 
-		// simulate webhook callback
-		await new Promise<void>((resolve) => {
-			webhookServer.emit("recordingReady", "test-call-id");
-			// give time for async operations to complete
-			setTimeout(resolve, 100);
+		// simulate webhook callbacks
+		webhookServer.emit("recordingReady", {
+			id: "test-call-id",
+			status: "event_phone_call_connected",
+			recording_available: false,
 		});
+		await new Promise((resolve) => setTimeout(resolve, 10));
+
+		webhookServer.emit("recordingReady", {
+			id: "test-call-id",
+			status: "event_phone_call_ended",
+			recording_available: false,
+		});
+		await new Promise((resolve) => setTimeout(resolve, 10));
+
+		webhookServer.emit("recordingReady", {
+			id: "test-call-id",
+			status: "event_recording",
+			recording_available: true,
+		});
+		await new Promise((resolve) => setTimeout(resolve, 100));
 
 		// verify the recording was processed
 		expect(callService.getRecording).toHaveBeenCalledWith("test-call-id");

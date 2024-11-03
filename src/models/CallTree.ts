@@ -4,6 +4,7 @@ export interface CallNode {
 	children: CallNode[];
 	visited: boolean;
 	responses: string[];
+	isTerminal: boolean;
 }
 
 export class CallTree {
@@ -16,6 +17,7 @@ export class CallTree {
 			children: [],
 			visited: false,
 			responses: [],
+			isTerminal: false,
 		};
 	}
 
@@ -30,23 +32,25 @@ export class CallTree {
 		}
 	}
 
-	public addChild(parentId: string, childPrompt: string): string {
-		const parent = this.findNode(parentId);
-		if (!parent) {
-			throw new Error(`Parent node ${parentId} not found`);
+	public addChild(
+		parentId: string,
+		prompt: string,
+		isTerminal = false
+	): string {
+		const parent = this.findNode(parentId, this.root);
+		if (parent) {
+			const childId = `${parentId}-${parent.children.length}`;
+			parent.children.push({
+				id: childId,
+				prompt,
+				children: [],
+				visited: false,
+				responses: [],
+				isTerminal,
+			});
+			return childId;
 		}
-
-		const childId = `${parentId}-${parent.children.length}`;
-		const childNode: CallNode = {
-			id: childId,
-			prompt: childPrompt,
-			children: [],
-			visited: false,
-			responses: [],
-		};
-
-		parent.children.push(childNode);
-		return childId;
+		return "";
 	}
 
 	public markVisited(nodeId: string): void {
@@ -91,7 +95,8 @@ export class CallTree {
 	}
 
 	public printTree(): void {
-		console.log("\n=== Voice Agent Conversation Flows ===\n");
+		console.log("\n=== Voice Agent Conversation Tree ===\n");
+		console.log("Depth: 0 = Root, 1 = Follow-up, 2 = Final response\n");
 		this.printScenario(this.root, [], "");
 	}
 
@@ -100,26 +105,53 @@ export class CallTree {
 		visited: string[],
 		indent: string
 	): void {
-		// Avoid infinite loops
 		if (visited.includes(node.id)) return;
 		visited.push(node.id);
 
-		// Print current node
-		console.log(`${indent}🗣️  Agent: "${node.prompt}"`);
+		// show depth level
+		const depth = node.id.split("-").length - 1;
+		console.log(`${indent}[Depth ${depth}] 🗣️  Agent: "${node.prompt}"`);
 
-		// Print responses received for this node
+		// truncate long responses
 		if (node.responses.length > 0) {
 			node.responses.forEach((response) => {
-				console.log(`${indent}👤  User: "${response}"`);
+				const truncated =
+					response.length > 500
+						? response.substring(0, 500) + "..."
+						: response;
+				console.log(`${indent}👤  User: "${truncated}"`);
 			});
 		}
 
-		// Print child scenarios
 		if (node.children.length > 0) {
+			console.log(`${indent}│`);
 			node.children.forEach((child) => {
-				console.log(`${indent}│`);
 				this.printScenario(child, [...visited], indent + "  ");
 			});
+		}
+	}
+
+	public getScenarios(): CallNode[][] {
+		const scenarios: CallNode[][] = [];
+		this.collectScenarios(this.root, [], scenarios);
+		return scenarios;
+	}
+
+	private collectScenarios(
+		node: CallNode,
+		currentPath: CallNode[],
+		scenarios: CallNode[][]
+	) {
+		currentPath.push(node);
+
+		if (node.children.length === 0) {
+			// leaf node - end of a scenario
+			scenarios.push([...currentPath]);
+		} else {
+			// continue down each child path
+			for (const child of node.children) {
+				this.collectScenarios(child, [...currentPath], scenarios);
+			}
 		}
 	}
 }
