@@ -28,13 +28,13 @@ npm install
 
 3. Install and set up ngrok:
 
-**Install ngrok globally:**
+*Install ngrok globally:*
 
 ```bash
 npm install -g ngrok
 ```
 
-**Start ngrok on port 3000:**
+*Start ngrok on port 3000:*
 
 ```bash
 ngrok http 3000
