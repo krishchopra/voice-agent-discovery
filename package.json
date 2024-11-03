@@ -1,0 +1,33 @@
+{
+	"name": "voice-agent-discovery",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "ts-node src/index.ts",
+		"dev": "ts-node-dev --respawn src/index.ts",
+		"build": "tsc",
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"test:coverage": "jest --coverage"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@deepgram/sdk": "^3.9.0",
+		"@types/express": "^5.0.0",
+		"@types/node": "^22.8.7",
+		"axios": "^1.7.7",
+		"dotenv": "^16.4.5",
+		"express": "^4.21.1",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.6.3"
+	},
+	"devDependencies": {
+		"@types/jest": "^29.5.14",
+		"jest": "^29.7.0",
+		"ts-jest": "^29.2.5",
+		"ts-node-dev": "^2.0.0"
+	}
+}
