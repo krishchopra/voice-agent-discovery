@@ -37,7 +37,7 @@ API_BASE_URL=https://app.hamming.ai
 TEST_PHONE_NUMBER=your_test_phone_number_here
 ```
 
-Similarly, create a .env.test file with the same variables, but with test values.
+Similarly, create a `.env.test` file with the same variables, but with test values.
 
 ## Running the Application
 
