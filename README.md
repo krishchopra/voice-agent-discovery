@@ -26,7 +26,23 @@ cd voice-agent-discovery
 npm install
 ```
 
-3. Create a `.env` file in the root directory with the following variables:
+3. Install and set up ngrok:
+
+**Install ngrok globally:**
+
+```bash
+npm install -g ngrok
+```
+
+**Start ngrok on port 3000:**
+
+```bash
+ngrok http 3000
+```
+
+Copy the HTTPS URL provided by ngrok (e.g., `https://xxxx-xx-xx-xxx-xx.ngrok-free.app/webhook`).
+
+4. Create a `.env` file in the root directory with the following variables:
 
 ```env
 API_TOKEN=your_hamming_api_token_here
