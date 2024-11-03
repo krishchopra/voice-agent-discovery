@@ -1,8 +1,8 @@
 # Voice Agent Discovery System
 
-An automated system for discovering and mapping AI voice agent conversation flows. 
+An automated system for discovering and mapping AI voice agent conversation flows.
 
-*(Take-home assignment for Hamming AI)*
+_(Take-home assignment for Hamming AI)_
 
 ## Prerequisites
 
@@ -33,8 +33,11 @@ API_TOKEN=your_hamming_api_token_here
 WEBHOOK_PORT=3000
 WEBHOOK_URL=your_webhook_url_here
 DEEPGRAM_API_KEY=your_deepgram_api_key_here
-API_BASE_URL=https://app.hamming.ai/api
+API_BASE_URL=https://app.hamming.ai
+TEST_PHONE_NUMBER=your_test_phone_number_here
 ```
+
+Similarly, create a .env.test file with the same variables, but with test values.
 
 ## Running the Application
 
