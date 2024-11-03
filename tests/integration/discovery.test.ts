@@ -13,14 +13,22 @@ describe("DiscoveryService Integration", () => {
 	let transcriptionService: jest.Mocked<TranscriptionService>;
 
 	beforeEach(() => {
+		jest.clearAllMocks();
+
 		webhookServer = new WebhookServer();
-		callService = new CallService(
-			"test_token",
-			"http://test.api"
-		) as jest.Mocked<CallService>;
-		transcriptionService = new TranscriptionService(
-			"test_key"
-		) as jest.Mocked<TranscriptionService>;
+		callService = {
+			startCall: jest.fn().mockResolvedValue("test-call-id"),
+			getRecording: jest
+				.fn()
+				.mockResolvedValue(Buffer.from("test audio")),
+		} as any;
+
+		transcriptionService = {
+			transcribeAudio: jest.fn().mockResolvedValue({
+				text: "Yes, I would like to know more",
+				confidence: 0.95,
+			}),
+		} as any;
 
 		discoveryService = new DiscoveryService(
 			callService,
@@ -31,27 +39,26 @@ describe("DiscoveryService Integration", () => {
 		);
 	});
 
-	afterEach(() => {
-		jest.clearAllMocks();
-	});
-
 	it("should handle the complete discovery flow", async () => {
-		// mock the necessary service calls
-		callService.startCall.mockResolvedValue("test-call-id");
-		callService.getRecording.mockResolvedValue(Buffer.from("test audio"));
-		transcriptionService.transcribeAudio.mockResolvedValue({
-			text: "Yes, I would like to know more",
-			confidence: 0.95,
-		});
-
 		// start the discovery process
 		await discoveryService.start();
 
-		// simulate webhook callback
-		webhookServer.emit("recordingReady", "test-call-id");
+		// verify initial call was made
+		expect(callService.startCall).toHaveBeenCalledWith(
+			"1234567890",
+			"Initial test prompt",
+			expect.any(String)
+		);
 
-		// add assertions based on expected behavior
-		expect(callService.startCall).toHaveBeenCalled();
+		// simulate webhook callback
+		await new Promise<void>((resolve) => {
+			webhookServer.emit("recordingReady", "test-call-id");
+			// give time for async operations to complete
+			setTimeout(resolve, 100);
+		});
+
+		// verify the recording was processed
+		expect(callService.getRecording).toHaveBeenCalledWith("test-call-id");
 		expect(transcriptionService.transcribeAudio).toHaveBeenCalled();
 	});
 });

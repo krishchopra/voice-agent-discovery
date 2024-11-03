@@ -1,13 +1,15 @@
 import { TranscriptionService } from "../../src/services/TranscriptService";
 
+// mock the entire Deepgram SDK
+const mockTranscribeFile = jest.fn();
 jest.mock("@deepgram/sdk", () => ({
-	createClient: jest.fn(() => ({
+	createClient: () => ({
 		listen: {
 			prerecorded: {
-				transcribeFile: jest.fn(),
+				transcribeFile: mockTranscribeFile,
 			},
 		},
-	})),
+	}),
 }));
 
 describe("TranscriptionService", () => {
@@ -15,11 +17,13 @@ describe("TranscriptionService", () => {
 	const mockAudioBuffer = Buffer.from("test audio data");
 
 	beforeEach(() => {
+		jest.clearAllMocks();
 		transcriptionService = new TranscriptionService("test_key");
 	});
 
 	it("should successfully transcribe audio", async () => {
-		const mockResult = {
+		// set up mock response
+		mockTranscribeFile.mockResolvedValue({
 			result: {
 				results: {
 					channels: [
@@ -34,13 +38,7 @@ describe("TranscriptionService", () => {
 					],
 				},
 			},
-			error: null,
-		};
-
-		const deepgramClient = require("@deepgram/sdk").createClient();
-		deepgramClient.listen.prerecorded.transcribeFile.mockResolvedValue(
-			mockResult
-		);
+		});
 
 		const result = await transcriptionService.transcribeAudio(
 			mockAudioBuffer
@@ -50,13 +48,14 @@ describe("TranscriptionService", () => {
 			text: "Hello world",
 			confidence: 0.95,
 		});
+		expect(mockTranscribeFile).toHaveBeenCalledWith(mockAudioBuffer, {
+			model: "nova-2",
+			smart_format: true,
+		});
 	});
 
 	it("should handle transcription errors", async () => {
-		const deepgramClient = require("@deepgram/sdk").createClient();
-		deepgramClient.listen.prerecorded.transcribeFile.mockRejectedValue(
-			new Error("Transcription failed")
-		);
+		mockTranscribeFile.mockRejectedValue(new Error("Transcription failed"));
 
 		await expect(
 			transcriptionService.transcribeAudio(mockAudioBuffer)

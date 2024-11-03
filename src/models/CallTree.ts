@@ -91,18 +91,35 @@ export class CallTree {
 	}
 
 	public printTree(): void {
-		this.printNode(this.root, 0);
+		console.log("\n=== Voice Agent Conversation Flows ===\n");
+		this.printScenario(this.root, [], "");
 	}
 
-	private printNode(node: CallNode, level: number): void {
-		const indent = "  ".repeat(level);
-		console.log(`${indent}Node ${node.id}:`);
-		console.log(`${indent}Prompt: ${node.prompt}`);
-		console.log(`${indent}Visited: ${node.visited}`);
-		console.log(`${indent}Responses: ${node.responses.join(", ")}`);
+	private printScenario(
+		node: CallNode,
+		visited: string[],
+		indent: string
+	): void {
+		// Avoid infinite loops
+		if (visited.includes(node.id)) return;
+		visited.push(node.id);
 
-		for (const child of node.children) {
-			this.printNode(child, level + 1);
+		// Print current node
+		console.log(`${indent}🗣️  Agent: "${node.prompt}"`);
+
+		// Print responses received for this node
+		if (node.responses.length > 0) {
+			node.responses.forEach((response) => {
+				console.log(`${indent}👤  User: "${response}"`);
+			});
+		}
+
+		// Print child scenarios
+		if (node.children.length > 0) {
+			node.children.forEach((child) => {
+				console.log(`${indent}│`);
+				this.printScenario(child, [...visited], indent + "  ");
+			});
 		}
 	}
 }
